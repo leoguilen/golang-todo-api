@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-vars
+data:
+  USE_SWAGGER: "true"
+  SWAGGER_DIR: "/bin"
+  DB_DRIVER_NAME: "sqlite3"
+  DB_SOURCE_NAME: "/bin/todo.db"
+  PORT: "80"

@@ -1,0 +1,386 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  CreateTodoRequest:
+    description: A request model to create todo item.
+    properties:
+      assignedTo:
+        description: Todo assigned user.
+        example: user@email.com
+        type: string
+        x-go-name: AssignedTo
+      description:
+        description: Todo description.
+        example: Do anything after wake up.
+        type: string
+        x-go-name: Description
+      limitDate:
+        description: Todo limitDate.
+        example: 2022-07-25T09:00:00
+        format: date-time
+        type: string
+        x-go-name: LimitDate
+      started:
+        description: Todo is started.
+        example: false
+        type: boolean
+        x-go-name: Started
+      title:
+        description: Todo title.
+        example: Do anything
+        type: string
+        x-go-name: Title
+    title: CreateTodoRequest
+    type: object
+    x-go-package: github.com/leoguilen/simple-go-api/pkg/api/models/requests
+  ErrorResponse:
+    description: A error response model when an error occured.
+    properties:
+      code:
+        description: Error code
+        format: int64
+        type: integer
+        x-go-name: Code
+      errors:
+        description: Error details
+        items:
+          $ref: '#/definitions/InnerErrorResponse'
+        type: array
+        x-go-name: Errors
+      title:
+        description: Error message
+        type: string
+        x-go-name: Message
+    title: ErrorResponse
+    type: object
+    x-go-package: github.com/leoguilen/simple-go-api/pkg/api/models/responses
+  InnerErrorResponse:
+    properties:
+      attempedValue:
+        description: Attempted value
+        type: object
+        x-go-name: AttemptedValue
+      errorMessage:
+        description: Error message
+        type: string
+        x-go-name: ErrorMessage
+      fieldName:
+        description: Field name
+        type: string
+        x-go-name: FieldName
+    type: object
+    x-go-package: github.com/leoguilen/simple-go-api/pkg/api/models/responses
+  SetTodoStatusRequest:
+    description: A request model to set new todo status.
+    properties:
+      status:
+        description: 'New todo status. Allowed status: (PENDING, IN_PROGRESS, DONE)'
+        example: IN_PROGRESS
+        type: string
+        x-go-name: Status
+    title: SetTodoStatusRequest
+    type: object
+    x-go-package: github.com/leoguilen/simple-go-api/pkg/api/models/requests
+  TodoResponse:
+    description: A TodoResponse is a model to return Todo data to client.
+    properties:
+      assignedTo:
+        description: AssignedTo of the TODO
+        example: user@email.com
+        type: string
+        x-go-name: AssignedTo
+      description:
+        description: Description of the TODO
+        example: Do something today
+        type: string
+        x-go-name: Description
+      id:
+        description: Id of the TODO
+        example: 421f701e-7ae8-4a9e-a40f-a6ad9ffd478b
+        type: string
+        x-go-name: Id
+      limitDate:
+        description: LimitDate of the TODO
+        example: 2022-07-24T23:00:00
+        format: date-time
+        type: string
+        x-go-name: LimitDate
+      status:
+        description: Status of the TODO
+        example: PENDING
+        type: string
+        x-go-name: Status
+      title:
+        description: Title of the TODO
+        example: Do something
+        type: string
+        x-go-name: Title
+    title: TodoResponse
+    type: object
+    x-go-package: github.com/leoguilen/simple-go-api/pkg/api/models/responses
+  UpdateTodoRequest:
+    description: A request model to update todo item.
+    properties:
+      assignedTo:
+        description: New todo assigned user.
+        example: user@email.com
+        type: string
+        x-go-name: AssignedTo
+      description:
+        description: New todo description.
+        example: Do anything after wake up.
+        type: string
+        x-go-name: Description
+      limitDate:
+        description: New todo limitDate.
+        example: 2022-07-25T09:00:00
+        format: date-time
+        type: string
+        x-go-name: LimitDate
+      title:
+        description: New todo title.
+        example: Do anything
+        type: string
+        x-go-name: Title
+    title: UpdateTodoRequest
+    type: object
+    x-go-package: github.com/leoguilen/simple-go-api/pkg/api/models/requests
+host: localhost:80
+info:
+  contact:
+    email: leonardo.guilen@outlook.com.br
+    name: Leonardo C. Guilen
+    url: https://github.com/leoguilen
+  description: |-
+    The purpose of this application is to provide an application
+    that is using to manage todo items
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+  termsOfService: There are no TOS at this moment, use at your own risk we take no
+    responsibility
+  title: Todo API.
+  version: 1.0.0
+paths:
+  /api/v1/todos:
+    get:
+      consumes:
+      - application/json
+      operationId: getAllTodos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of todo items response.
+          schema:
+            items:
+              $ref: '#/definitions/TodoResponse'
+            type: array
+        "500":
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      schemes:
+      - http
+      summary: Get list of todos.
+      tags:
+      - Todos
+    post:
+      consumes:
+      - application/json
+      description: This will create todo item.
+      operationId: createTodo
+      parameters:
+      - description: Request body format to create todo item.
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/CreateTodoRequest'
+          description: Request body format to create todo item.
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          $ref: '#/responses/_'
+          description: Todo created successfully.
+        "400":
+          description: Validation error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      schemes:
+      - http
+      summary: Create new todo item.
+      tags:
+      - Todos
+  /api/v1/todos/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This will delete todo item by id. If exists.
+      operationId: deleteTodo
+      parameters:
+      - description: The Todo unique identifier.
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          $ref: '#/responses/_'
+          description: Todo item deleted successfully.
+        "404":
+          description: Not found todo item.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      schemes:
+      - http
+      summary: Delete todo item by id.
+      tags:
+      - Todos
+    get:
+      consumes:
+      - application/json
+      description: This will get single todo by id. If exists.
+      operationId: getTodoById
+      parameters:
+      - description: The Todo unique identifier.
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Todo item response.
+          schema:
+            $ref: '#/definitions/TodoResponse'
+        "404":
+          description: Not found todo item.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      schemes:
+      - http
+      summary: Get single todo by id.
+      tags:
+      - Todos
+    put:
+      consumes:
+      - application/json
+      description: This will update todo item by id. If exists.
+      operationId: updateTodo
+      parameters:
+      - description: The Todo unique identifier.
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request body format to update todo item.
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateTodoRequest'
+          description: Request body format to update todo item.
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Todo updated successfully.
+          schema:
+            $ref: '#/definitions/TodoResponse'
+        "400":
+          description: Validation error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      schemes:
+      - http
+      summary: Update todo item.
+      tags:
+      - Todos
+  /api/v1/todos/{id}/new-status:
+    patch:
+      consumes:
+      - application/json
+      description: This will change todo status by id. If exists.
+      operationId: setTodoStatus
+      parameters:
+      - description: The Todo unique identifier.
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request body format to set new todo status.
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/SetTodoStatusRequest'
+          description: Request body format to set new todo status.
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/_'
+          description: Todo status updated successfully.
+        "400":
+          description: Validation error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Not found.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "422":
+          description: Business requirement error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      schemes:
+      - http
+      summary: Set new status to todo item.
+      tags:
+      - Todos
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"
